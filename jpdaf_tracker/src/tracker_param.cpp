@@ -43,7 +43,7 @@ namespace jpdaf
         nh_priv_.getParam("source_odom_name", source_odom_name);
         nh_priv_.getParam("target_odom_names", target_odom_names);
 
-        nh_priv_.param<string>("root", root_, "/home/arpl/");
+        nh_priv_.param<string>("root", root_, "/home/marklee/");
         nh_priv_.param<string>("output_file_name", output_file_name_, "jpdaf_output");
 
 

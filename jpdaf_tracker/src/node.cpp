@@ -15,9 +15,10 @@ Node::Node(ros::NodeHandle nh, ros::NodeHandle nh_priv):
 
 
 
-    detection_sub_ = nh_priv_.subscribe("detection", 10, &Node::detectionCallback, this);
-    image_sub_ = nh_priv_.subscribe("image", 10, &Node::imageCallback, this);
-    imu_sub_ = nh_priv_.subscribe("imu", 10, &Node::imuCallback, this);
+    detection_sub_ = nh_priv_.subscribe("/darknet_ros/bounding_boxes", 10, &Node::detectionCallback, this);
+    image_sub_ = nh_priv_.subscribe("/gaze/image_resized", 10, &Node::imageCallback, this);
+
+    imu_sub_ = nh_priv_.subscribe("/gaze/imu", 10, &Node::imuCallback, this);
 /*    source_odom_sub_ = nh_priv_.subscribe(params.gt_topic_name+params.source_odom_name, 10, &Node::GTSourceCallback, this);
     for(uint t=0; t<params.target_odom_names.size(); t++)
     {
@@ -47,7 +48,7 @@ Node::Node(ros::NodeHandle nh, ros::NodeHandle nh_priv):
 
 
     output_file_.open(params.root_ + params.output_file_name_ + ".txt", ios::out | ios::trunc);
-    assert(output_file_.is_open());
+    //assert(output_file_.is_open());
 
 
 }
@@ -59,6 +60,7 @@ void Node::timer_callback(const ros::TimerEvent& event)
 
 void Node::detectionCallback(const darknet_ros_msgs::BoundingBoxesPtr& bounding_boxes)
 {
+  //ROS_INFO("callback bbox");
     bounding_boxes_msgs_buffer_.push_back(*bounding_boxes);
     track(true);
 }
@@ -72,14 +74,6 @@ void Node::imuCallback(const sensor_msgs::Imu& imu_msg)
 {
     imu_buffer_.push_back(imu_msg);
 }
-
-/*void Node::GTSourceCallback(const nav_msgs::OdometryConstPtr& msg)
-{
-}
-
-void Node::GTTargetCallback(const nav_msgs::OdometryConstPtr& msg)
-{
-}*/
 
 
 
