@@ -757,7 +757,7 @@ void Node::draw_tracks_publish_image(std::vector<Detection> detections, double d
             cv::Point2f tr_pos((int)(tracks_[t].get_z())(0), (int)(tracks_[t].get_z())(1));
             cv::Point2f id_pos(tr_pos.x, tr_pos.y+30);
             cv::circle(im, tr_pos, 5, cv::Scalar(0, 255, 0), 2); 
-            putText(im, to_string(tracks_[t].getId()), id_pos, cv::FONT_HERSHEY_COMPLEX_SMALL, 1.5, cvScalar(0, 255, 0), 1, CV_AA);
+            putText(im, to_string(tracks_[t].getId()), id_pos, cv::FONT_HERSHEY_COMPLEX_SMALL, 1.5, cvScalar(0, 255, 0), 1, cv::LINE_AA);
 
             //ellipse for 95% confidence
             cv::RotatedRect ellipse = tracks_[t].get_error_ellipse(2.4477);
@@ -768,7 +768,7 @@ void Node::draw_tracks_publish_image(std::vector<Detection> detections, double d
             cv::Point2f tr_pos((int)(tracks_[t].get_z())(0), (int)(tracks_[t].get_z())(1));
             cv::Point2f id_pos(tr_pos.x, tr_pos.y+30);
             cv::circle(im, tr_pos, 5, cv::Scalar(255, 150, 0), 2);
-            putText(im, "-", id_pos, cv::FONT_HERSHEY_COMPLEX_SMALL, 1.5, cvScalar(255, 150, 0), 1, CV_AA);
+            putText(im, "-", id_pos, cv::FONT_HERSHEY_COMPLEX_SMALL, 1.5, cvScalar(255, 150, 0), 1, cv::LINE_AA);
 
             //ellipse for 95% confidence
             cv::RotatedRect ellipse = tracks_[t].get_error_ellipse(2.4477);
@@ -785,7 +785,7 @@ void Node::draw_tracks_publish_image(std::vector<Detection> detections, double d
 
 
     cv::Point2f counter_pos(10, 30);
-    putText(im, to_string(debug_track_counter), counter_pos, cv::FONT_HERSHEY_COMPLEX_SMALL, 1.0, cvScalar(0, 0, 0), 1, CV_AA);
+    putText(im, to_string(debug_track_counter), counter_pos, cv::FONT_HERSHEY_COMPLEX_SMALL, 1.0, cvScalar(0, 0, 0), 1, cv::LINE_AA);
 
     cv_bridge::CvImage processed_image_debug_bridge;
     processed_image_debug_bridge.header.stamp = sync_image_ptr->header.stamp;
