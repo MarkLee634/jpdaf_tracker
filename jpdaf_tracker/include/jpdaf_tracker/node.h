@@ -12,6 +12,7 @@
 #include <darknet_ros_msgs/BoundingBoxes.h>
 #include <darknet_ros_msgs/BoundingBox.h>
 #include <image_transport/image_transport.h>
+#include <geometry_msgs/PoseArray.h>
 
 #include <jpdaf_tracker/tracker_param.h>
 #include <jpdaf_tracker/detection.h>
@@ -49,7 +50,9 @@ class Node {
         //std::vector<ros::Subscriber> target_odom_subs_;
 
         bool track_init;
-        std::vector<darknet_ros_msgs::BoundingBoxes> bounding_boxes_msgs_buffer_;
+//        std::vector<darknet_ros_msgs::BoundingBoxes> bounding_boxes_msgs_buffer_;
+        std::vector<geometry_msgs::PoseArray> bounding_boxes_msgs_buffer_;
+
         std::vector<sensor_msgs::ImageConstPtr> image_buffer_;
         std::vector<sensor_msgs::Imu> imu_buffer_;
 
@@ -79,7 +82,9 @@ class Node {
 //----------------------------
 
 
-        void detectionCallback(const darknet_ros_msgs::BoundingBoxesPtr& bounding_boxes);
+//        void detectionCallback(const darknet_ros_msgs::BoundingBoxesPtr& bounding_boxes);
+        void detectionCallback(const geometry_msgs::PoseArray& in_PoseArray); //bbox to track
+
         void imageCallback(const sensor_msgs::ImageConstPtr& img_msg);
 
         void imuCallback(const sensor_msgs::Imu& imu_msg);
@@ -104,6 +109,8 @@ class Node {
         std::vector<Track> create_new_tracks(std::vector<Detection> detections, std::vector<int> unassoc_detections, Eigen::Vector3f omega, double time_step);
 
         std::vector<Detection> get_detections(const darknet_ros_msgs::BoundingBoxes last_detection);
+
+        std::vector<Detection> get_detections(const geometry_msgs::PoseArray latest_detection);
 
         Eigen::MatrixXf compute_betas_matrix(std::vector<Eigen::MatrixXf> hypothesis_mats, std::vector<double> hypothesis_probs);
 

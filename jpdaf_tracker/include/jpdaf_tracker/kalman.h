@@ -29,6 +29,7 @@ namespace jpdaf
       Eigen::MatrixXf K; //Gain
       Eigen::Matrix4f P; //Covariance Matrix predicted error
       Eigen::Vector4f x;
+      Eigen::Vector4f x_ang;
       Eigen::Vector2f z;
 
       float f;

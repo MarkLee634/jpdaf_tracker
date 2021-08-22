@@ -5,6 +5,7 @@ using namespace std;
 
 Track::Track(const float& x, const float& y, const float& vx, const float& vy, TrackerParam params)
 {
+    ROS_WARN("creating track with x:%f, y:%f, vx:%f, vy:%f", x, y, vx, vy);
     KF = std::shared_ptr<Kalman>(new Kalman(x, y, vx, vy, params));
     life_time = 0;
     noDetections = 0;

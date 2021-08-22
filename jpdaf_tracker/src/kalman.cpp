@@ -57,7 +57,7 @@ void Kalman::predict(const float dt, const Eigen::Vector3f omega)
        0, 0, 0, dt*T(1);
 
 
-  cout << "Q: " << endl << Q << endl;//Q has very low position variances and very high speed variances
+//  cout << "Q: " << endl << Q << endl;//Q has very low position variances and very high speed variances
 
   
   Eigen::Vector3f u = omega*dt;
@@ -71,6 +71,11 @@ void Kalman::predict(const float dt, const Eigen::Vector3f omega)
   B(2,1) = -((z(0)-c(0))*(z(1)-c(1)))/(alpha*f);
   B(2,2) = -(z(0)-c(0))/alpha;
 
+//  cout << "B matrix:" << endl << B << endl;
+//  cout << "omega:" << endl << omega << endl;
+//  cout << "dt:" << endl << dt << endl;
+//  cout << "u:" << endl << u << endl;
+
   if((isnan(B.array())).any()) // may happen if one track flies to infinity. The return is just to avoid a crash
   {
     ROS_FATAL("B contains NaNs");
@@ -82,9 +87,10 @@ void Kalman::predict(const float dt, const Eigen::Vector3f omega)
     return;
   }
 
+  x_ang = B*u;
   x = A*x + B*u;
 
-  cout << "x predict:" << endl << x << endl;
+  cout << "x_pred:" << endl << x << endl;
   
   P = A * P * A.transpose() + Q;  //ttt
   
