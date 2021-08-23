@@ -129,7 +129,7 @@ void Kalman::update(const std::vector<Detection> detections, const std::vector<d
 {
 
   K = P * C.transpose() * S.inverse();
-  cout << "K:" << endl << K << endl;
+//  cout << "K:" << endl << K << endl;
 
   std::vector<Eigen::Vector2f> nus;
   for(uint i=0; i<detections.size(); i++)
@@ -147,7 +147,7 @@ void Kalman::update(const std::vector<Detection> detections, const std::vector<d
     
   x = x + K * nu;
 
-  cout << "x update:" << endl << x << endl;
+//  cout << "x update:" << endl << x << endl;
 
   Eigen::Matrix4f P_c;
   P_c = P - K * S * K.transpose(); //Changed here, there is an error in the PhD thesis! It should be - instead of +

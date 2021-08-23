@@ -29,6 +29,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <sstream>
 
 namespace jpdaf {
 
@@ -77,7 +78,9 @@ class Node {
 
         int debug_track_counter;
 
-        fstream output_file_;
+        ofstream output_file_;
+
+        bool write_true = false;
 
 //----------------------------
 
