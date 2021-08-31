@@ -59,7 +59,7 @@ void Node::timer_callback(const ros::TimerEvent& event)
 
 void Node::detectionCallback(const geometry_msgs::PoseArray& in_PoseArray)
 {
-    ROS_ERROR("detected size: %lu ", in_PoseArray.poses.size() );
+//    ROS_ERROR("detected size: %lu ", in_PoseArray.poses.size() );
 
     //copy values
     geometry_msgs::PoseArray noise_PoseArray;
@@ -73,15 +73,65 @@ void Node::detectionCallback(const geometry_msgs::PoseArray& in_PoseArray)
 
     }
 
-    //add noise
-    int clutter_size = 1;
-    for (int c =0; c < clutter_size; c++)
-    {
-        geometry_msgs::Pose noise_Pose;
-        noise_Pose.position.x = 0;
-        noise_Pose.position.y = 0;
-        noise_PoseArray.poses.push_back(noise_Pose);
-    }
+//    for(int d=0; d<(int)noise_PoseArray.poses.size(); d++)
+//    {
+//        cout << (int)(noise_PoseArray.poses[d].position.x) << "," <<  (int)(noise_PoseArray.poses[d].position.y) << ",";
+//        output_file_ <<  (int)(noise_PoseArray.poses[d].position.x) << "," <<  (int)(noise_PoseArray.poses[d].position.y) << "," ;
+//    }
+//    cout << endl;
+
+//    add noise
+//    add clutter FP ====================================
+//    int clutter_size = 1;
+//    for (int c =0; c < clutter_size; c++)
+//    {
+//        geometry_msgs::Pose noise_Pose;
+//        noise_Pose.position.x = int(rand()%400);
+//        noise_Pose.position.y = int(rand()%300);
+//        noise_PoseArray.poses.push_back(noise_Pose);
+//    }
+
+    //add missed detection FN ====================================
+//    float detection_prob = 0.97;
+
+//    float rand1 = (rand()%1000)/float(1000.0);
+//    float rand2 = (rand()%1000)/float(1000.0);
+//    float rand3 = (rand()%1000)/float(1000.0);
+
+//    ROS_ERROR("probabilty: %f: , %f: , %f: ",rand1, rand2, rand3);
+
+//    if(rand1 > detection_prob)
+//    {
+//        noise_PoseArray.poses[0].position.x = 0;
+//        noise_PoseArray.poses[0].position.y = 0;
+//    }
+
+//    if(rand2 > detection_prob)
+//    {
+//        noise_PoseArray.poses[1].position.x = 0;
+//        noise_PoseArray.poses[1].position.y = 0;
+//    }
+
+//    if(rand3 > detection_prob)
+//    {
+//        noise_PoseArray.poses[2].position.x = 0;
+//        noise_PoseArray.poses[2].position.y = 0;
+//    }
+
+    //Gaussian Noise ================================
+//    float noiseScalar = 0.75;
+//    float measurement_covariance = 10;
+
+//    noise_PoseArray.poses[0].position.x = noise_PoseArray.poses[0].position.x + (float((rand()%100)/100.0) * measurement_covariance * noiseScalar) ;
+//    noise_PoseArray.poses[0].position.y = noise_PoseArray.poses[0].position.y + (float((rand()%100)/100.0) * measurement_covariance * noiseScalar) ;
+
+//    noise_PoseArray.poses[1].position.x = noise_PoseArray.poses[1].position.x + (float((rand()%100)/100.0) * measurement_covariance * noiseScalar) ;
+//    noise_PoseArray.poses[1].position.y = noise_PoseArray.poses[1].position.y + (float((rand()%100)/100.0) * measurement_covariance * noiseScalar) ;
+
+//    noise_PoseArray.poses[2].position.x = noise_PoseArray.poses[2].position.x + (float((rand()%100)/100.0) * measurement_covariance * noiseScalar) ;
+//    noise_PoseArray.poses[2].position.y = noise_PoseArray.poses[2].position.y + (float((rand()%100)/100.0) * measurement_covariance * noiseScalar) ;
+
+
 
 ROS_ERROR("total measurement size: %lu ", noise_PoseArray.poses.size() );
 
@@ -223,15 +273,16 @@ void Node::track(bool called_from_detection)
             auto hypothesis_probs = compute_probabilities_of_hypothesis_matrices(hypothesis_mats, detections);
             ROS_INFO("Nb of hypotheses: %d", (int)hypothesis_mats.size());
 
-            /*cout << "hypothesis matrices and their respective probabilities:" << endl;
+            cout << "hypothesis matrices and their respective probabilities:" << endl;
             for(uint h=0; h<hypothesis_mats.size(); h++)
             {
                 cout << hypothesis_mats[h] << endl << "prob: " <<hypothesis_probs[h] << endl << endl;
-            }*/
+            }
 
             auto betas_matrix = compute_betas_matrix(hypothesis_mats, hypothesis_probs);
-//            cout << "betas_matrix: " << endl << betas_matrix << endl;
+            cout << "betas_matrix: " << endl << betas_matrix << endl;
 
+            ROS_INFO("track size: %lu", tracks_.size());
 
             std::vector<double> betas_0;
             for(uint t=0; t<tracks_.size(); t++)
@@ -246,30 +297,36 @@ void Node::track(bool called_from_detection)
                 betas_0.push_back(beta_0);
                 tracks_[t].update(detections, beta, beta_0);
 
-//                cout << "tracks: " << endl << tracks_[t].get_z() << endl;
+                cout << "tracks: " << endl << tracks_[t].get_z() << endl;
                 write_true = true;
 
             }
 
-            if(write_true)
-            {
-                ROS_ERROR("writing to CSV in CB ");
-               output_file_ <<  (int)(tracks_[0].get_z())(0) << "," <<  (int)(tracks_[0].get_z())(1) << "," <<
-                  (int)(tracks_[1].get_z())(0) << "," <<  (int)(tracks_[1].get_z())(1) << "," <<
-                  (int)(tracks_[2].get_z())(0) << "," <<  (int)(tracks_[2].get_z())(1) << endl;                                                                ;
-            }
+//            if(write_true)
+//            {
+//                ROS_ERROR("writing to CSV in CB ");
+//               output_file_ <<  (int)(tracks_[0].get_z())(0) << "," <<  (int)(tracks_[0].get_z())(1) << "," <<
+//                  (int)(tracks_[1].get_z())(0) << "," <<  (int)(tracks_[1].get_z())(1) << "," <<
+//                  (int)(tracks_[2].get_z())(0) << "," <<  (int)(tracks_[2].get_z())(1) << endl;                                                                ;
+//            }
             std::vector<double> alphas_0; for(int m=0; m<betas_matrix.rows(); m++){alphas_0.push_back(betas_matrix(m, 0));} // betas 0 are probabilities that track t has not been detected. Alphas 0 are probabilities that measurement m was generated by clutter noise. So beta 0 does NOT correspond to first column  of betas matrix
 
+//            ROS_INFO("before publish img");
 
             draw_tracks_publish_image(detections, (double)(last_timestamp_synchronized + time_step), projected_predictions);
 
             publishTracks((double)(last_timestamp_synchronized + time_step));
+
+//            ROS_INFO("after publish tracks");
 
 
 
 //        }
 
 //            writeToFile((int)detections.size(), omega);
+
+//            ROS_INFO("before manage track function");
+
 
             manage_new_old_tracks(detections, alphas_0, betas_0, omega, time_step); //ttt
 
@@ -530,6 +587,7 @@ void Node::manage_new_old_tracks(std::vector<Detection> detections, std::vector<
         }
     }
 
+    ROS_INFO("creating new tracks");
     auto new_tracks = create_new_tracks(detections, unassoc_detections_idx, omega, time_step);
 
     for(uint j=0; j<betas_0.size(); j++)
@@ -756,12 +814,12 @@ void Node::draw_tracks_publish_image(std::vector<Detection> detections, double d
     {
         //cv::circle(im, detections[d](), 2, cv::Scalar(255, 20, 150), 2); 
 
-        cv::Point2f det_cross_a(detections[d]().x-10, detections[d]().y-10);
-        cv::Point2f det_cross_b(detections[d]().x+10, detections[d]().y-10);
-        cv::Point2f det_cross_c(detections[d]().x-10, detections[d]().y+10);
-        cv::Point2f det_cross_d(detections[d]().x+10, detections[d]().y+10);
-        line(im, det_cross_a, det_cross_d, cv::Scalar(255, 20, 150), 2, 2 );
-        line(im, det_cross_b, det_cross_c, cv::Scalar(255, 20, 150), 2, 2 );
+//        cv::Point2f det_cross_a(detections[d]().x-10, detections[d]().y-10);
+//        cv::Point2f det_cross_b(detections[d]().x+10, detections[d]().y-10);
+//        cv::Point2f det_cross_c(detections[d]().x-10, detections[d]().y+10);
+//        cv::Point2f det_cross_d(detections[d]().x+10, detections[d]().y+10);
+//        line(im, det_cross_a, det_cross_d, cv::Scalar(255, 20, 150), 2, 2 );
+//        line(im, det_cross_b, det_cross_c, cv::Scalar(255, 20, 150), 2, 2 );
     }
 
 
@@ -769,12 +827,12 @@ void Node::draw_tracks_publish_image(std::vector<Detection> detections, double d
     {
         if(tracks_[p].getId() != -1)
         {
-            cv::Point2f pr_pos((int)(projected_predictions[p])(0), (int)(projected_predictions[p])(1));
+            cv::Point2f pr_pos((int)(projected_predictions[p])(0)*640/224.0, ((int)(projected_predictions[p])(1)-28)*480/168.0);
             cv::circle(im, pr_pos, 2, cv::Scalar(0, 210, 255), 2); 
         }
         else
         {
-            cv::Point2f pr_pos((int)(projected_predictions[p])(0), (int)(projected_predictions[p])(1));
+            cv::Point2f pr_pos((int)(projected_predictions[p])(0)*640/224.0, ((int)(projected_predictions[p])(1)-28)*480/168.0);
             cv::circle(im, pr_pos, 1, cv::Scalar(180, 0, 255), 2); 
         }
     }
@@ -783,25 +841,25 @@ void Node::draw_tracks_publish_image(std::vector<Detection> detections, double d
     {
         if(tracks_[t].getId() != -1)
         {
-            cv::Point2f tr_pos((int)(tracks_[t].get_z())(0), (int)(tracks_[t].get_z())(1));
+            cv::Point2f tr_pos((int)(tracks_[t].get_z())(0)*640/224.0, ((int)(tracks_[t].get_z())(1)-28)*480/168.0);
             cv::Point2f id_pos(tr_pos.x, tr_pos.y+30);
             cv::circle(im, tr_pos, 5, cv::Scalar(0, 255, 0), 2); 
             putText(im, to_string(tracks_[t].getId()), id_pos, cv::FONT_HERSHEY_COMPLEX_SMALL, 1.5, cvScalar(0, 255, 0), 1, cv::LINE_AA);
 
             //ellipse for 95% confidence
-            cv::RotatedRect ellipse = tracks_[t].get_error_ellipse(2.4477);
-            cv::ellipse(im, ellipse, cv::Scalar(150, 255, 150), 1);
+//            cv::RotatedRect ellipse = tracks_[t].get_error_ellipse(2.4477);
+//            cv::ellipse(im, ellipse, cv::Scalar(150, 255, 150), 1);
         }
         else
         {
-            cv::Point2f tr_pos((int)(tracks_[t].get_z())(0), (int)(tracks_[t].get_z())(1));
+            cv::Point2f tr_pos((int)(tracks_[t].get_z())(0)*640/224.0, ((int)(tracks_[t].get_z())(1)-28)*480/168.0);
             cv::Point2f id_pos(tr_pos.x, tr_pos.y+30);
             cv::circle(im, tr_pos, 5, cv::Scalar(255, 150, 0), 2);
             putText(im, "-", id_pos, cv::FONT_HERSHEY_COMPLEX_SMALL, 1.5, cvScalar(255, 150, 0), 1, cv::LINE_AA);
 
             //ellipse for 95% confidence
-            cv::RotatedRect ellipse = tracks_[t].get_error_ellipse(2.4477);
-            cv::ellipse(im, ellipse, cv::Scalar(255, 250, 150), 1);
+//            cv::RotatedRect ellipse = tracks_[t].get_error_ellipse(2.4477);
+//            cv::ellipse(im, ellipse, cv::Scalar(255, 250, 150), 1);
         }
     }
 

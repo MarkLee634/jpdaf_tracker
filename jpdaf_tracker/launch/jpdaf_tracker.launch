@@ -1,7 +1,7 @@
 <launch>
-  <arg name="detection_topic" default="/hummingbird0/track/bounding_box" />
-  <arg name="image_topic" default="/hummingbird0/camera/rgb" />
-  <arg name="imu_topic" default="/gaze/imu" />
+  <arg name="detection_topic" default="/DragonPro3/snpe_ros/detections" /> <!-- /DragonPro3/snpe_ros/detections OR /hummingbird0/track/bounding_box-->
+  <arg name="image_topic" default="/DragonPro3/image_publisher/image_raw" /> <!-- /DragonPro3/image_publisher/image_raw OR /hummingbird0/camera/rgb-->
+  <arg name="imu_topic" default="/DragonPro3/imu" /> <!-- /DragonPro3/imu OR /gaze/imu-->
   <!--arg name="gt_topic" default="/"/-->
   <node pkg="jpdaf_tracker" type="jpdaf_tracker" name="jpdaf_tracker" output="screen">
     <remap from="~detection" to="$(arg detection_topic)" />
@@ -10,7 +10,7 @@
     <!--remap from="~gt" to="$(arg gt_topic)"/-->
     <param name="pd" value="0.952662721893" />
     <param name="gamma" value="0.5" />
-    <param name="false_measurements_density" value="0.00000003034" />
+    <param name="false_measurements_density" value="0.00000003034" /> <!-- 00000003034 -->
     <param name="beta_0_threshold" value="0.8" />
     <param name="alpha_0_threshold" value="0.98" />
     <param name="max_missed_rate" value="15" />
@@ -18,7 +18,7 @@
     <rosparam param="R">[2, 2]</rosparam>
     <rosparam param="T">[50000, 50000]</rosparam>
     <rosparam param="P_0">[20, 8, 20, 8]</rosparam>
-    <param name="nb_drones" value="3" />
+    <param name="nb_drones" value="2" />
     <param name="assoc_cost" value="50" />
     <param name="max_update_time_rate" value="0.1" />
     <param name="focal_length" value="564.26" />
